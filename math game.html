@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Challenge</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            padding: 20px;
+            border-radius: 15px;
+            background-color: #1E1E1E;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+        input {
+            padding: 10px;
+            width: 80%;
+            margin: 10px;
+            font-size: 18px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button {
+            padding: 12px;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #e68900;
+        }
+        .correct {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .wrong {
+            color: #F44336;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔥 Math Challenge 🔥</h1>
+        <p id="question">Loading...</p>
+        <input type="text" id="answer" placeholder="Masukkan jawaban" autofocus>
+        <br>
+        <button onclick="submitAnswer()">✔ Submit</button>
+        <button onclick="skipQuestion()">⏭ Skip</button>
+        <p id="timer">⏳ Waktu: 35:00</p>
+        <p id="score">🏆 Skor: 0</p>
+        <p id="feedback"></p>
+        <audio id="correctSound" src="correct.mp3"></audio>
+        <audio id="wrongSound" src="incorrect.mp3"></audio>
+    </div>
+    
+    <script>
+        let timeLeft = 35 * 60;
+        let score = 0;
+        let currentQuestion = {};
+        let usedQuestions = new Set();
+        let timerInterval;
+
+        const questions = [
+            { question: "5 + 3", answer: "8" },
+            { question: "12 - 7", answer: "5" },
+            { question: "4 x 2", answer: "8" },
+            { question: "16 ÷ 4", answer: "4" },
+            { question: "3 + 6 x 2", answer: "15" },
+            { question: "(8 ÷ 2) + 7", answer: "11" },
+            { question: "√64", answer: "8" },
+            { question: "5²", answer: "25" },
+            { question: "√9 + 5", answer: "8" },
+            { question: "25% dari 200", answer: "50" },
+            { question: "40% dari 150", answer: "60" },
+            { question: "15% dari 80", answer: "12" },
+            { question: "60% dari 90", answer: "54" },
+            { question: "75% dari 120", answer: "90" },
+            { question: "10% dari 500", answer: "50" },
+            { question: "5% dari 400", answer: "20" },
+            { question: "Jika x + 3 = 7, berapa nilai x?", answer: "4" },
+            { question: "Jika 2x = 10, maka x adalah?", answer: "5" },
+            { question: "Selesaikan: 3x - 5 = 10", answer: "5" },
+            { question: "Sederhanakan: (2x + 3x)", answer: "5x" }
+        ];
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    document.getElementById("timer").textContent = `⏳ Waktu: ${String(Math.floor(timeLeft / 60)).padStart(2, '0')}:${String(timeLeft % 60).padStart(2, '0')}`;
+                } else {
+                    clearInterval(timerInterval);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function generateQuestion() {
+            if (usedQuestions.size >= questions.length) {
+                usedQuestions.clear();
+            }
+            let newQuestion;
+            do {
+                newQuestion = questions[Math.floor(Math.random() * questions.length)];
+            } while (usedQuestions.has(newQuestion.question));
+            usedQuestions.add(newQuestion.question);
+            currentQuestion = newQuestion;
+            document.getElementById("question").textContent = currentQuestion.question;
+        }
+
+        function submitAnswer() {
+            let userAnswer = document.getElementById("answer").value.trim();
+            if (userAnswer === String(currentQuestion.answer)) {
+                score++;
+                document.getElementById("feedback").textContent = "✅ Benar!";
+                document.getElementById("feedback").className = "correct";
+            } else {
+                document.getElementById("feedback").textContent = "❌ Salah!";
+                document.getElementById("feedback").className = "wrong";
+            }
+            document.getElementById("score").textContent = `🏆 Skor: ${score}`;
+            document.getElementById("answer").value = "";
+            generateQuestion();
+        }
+
+        function skipQuestion() {
+            generateQuestion();
+        }
+
+        function endGame() {
+            alert(`Waktu habis! Skor akhir: ${score}`);
+        }
+
+        document.getElementById("answer").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                submitAnswer();
+            }
+        });
+
+        generateQuestion();
+        startTimer();
+    </script>
+</body>
+</html>
